@@ -5,24 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>平安夜快乐 | 苹果动画</title>
     <style>
+        /* 页面样式 */
         body {
             margin: 0;
             overflow: hidden;
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
         canvas {
             display: block;
-            background-color: #f0f0f0;
+            background-color: transparent;
         }
 
+        /* 祝福语样式 */
         .message {
             position: absolute;
             top: 20px;
             width: 100%;
             text-align: center;
-            font-size: 40px;
+            font-size: 30px;
             color: #FF6347;
             font-weight: bold;
             text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
@@ -30,9 +37,12 @@
     </style>
 </head>
 <body>
+    <!-- 祝福语 -->
     <div class="message">平安夜快乐！🎄</div>
+
+    <!-- 画布 -->
     <canvas id="appleCanvas"></canvas>
-    
+
     <script>
         // 获取canvas和其上下文
         const canvas = document.getElementById('appleCanvas');
@@ -42,56 +52,79 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // 苹果的初始位置和运动速度
-        let x = canvas.width / 2;
-        let y = canvas.height / 2;
-        let dx = 2;
-        let dy = 2;
+        // 苹果的类
+        class Apple {
+            constructor(x, y, dx, dy, radius) {
+                this.x = x;
+                this.y = y;
+                this.dx = dx;
+                this.dy = dy;
+                this.radius = radius;
+            }
 
-        // 绘制苹果的函数
-        function drawApple() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
-            
-            // 画苹果主体（一个简单的圆形）
-            ctx.beginPath();
-            ctx.arc(x, y, 30, 0, Math.PI * 2);
-            ctx.fillStyle = 'red';
-            ctx.fill();
-            ctx.stroke();
-            ctx.closePath();
+            // 绘制苹果的函数
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'red';
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
 
-            // 画苹果的叶子
-            ctx.beginPath();
-            ctx.moveTo(x - 10, y - 30); // 叶子的起点
-            ctx.lineTo(x + 10, y - 50); // 叶子的顶端
-            ctx.lineTo(x + 30, y - 30); // 叶子的终点
-            ctx.fillStyle = 'green';
-            ctx.fill();
-            ctx.stroke();
-            ctx.closePath();
+                // 画苹果的叶子
+                ctx.beginPath();
+                ctx.moveTo(this.x - 10, this.y - this.radius - 10); // 叶子的起点
+                ctx.lineTo(this.x + 10, this.y - this.radius - 30); // 叶子的顶端
+                ctx.lineTo(this.x + 30, this.y - this.radius - 10); // 叶子的终点
+                ctx.fillStyle = 'green';
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            // 更新苹果的位置
+            update() {
+                this.x += this.dx;
+                this.y += this.dy;
+
+                // 如果苹果碰到画布边缘，则改变运动方向
+                if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+                    this.dx = -this.dx;
+                }
+                if (this.y + this.radius > canvas.height || this.y - this.radius < 0) {
+                    this.dy = -this.dy;
+                }
+
+                this.draw(); // 绘制苹果
+            }
+        }
+
+        // 创建多个苹果对象
+        const apples = [];
+        for (let i = 0; i < 10; i++) {
+            let radius = 30 + Math.random() * 20; // 随机生成苹果半径
+            let x = Math.random() * (canvas.width - 2 * radius) + radius; // 随机生成苹果x坐标
+            let y = Math.random() * (canvas.height - 2 * radius) + radius; // 随机生成苹果y坐标
+            let dx = (Math.random() - 0.5) * 4; // 随机生成x方向速度
+            let dy = (Math.random() - 0.5) * 4; // 随机生成y方向速度
+            apples.push(new Apple(x, y, dx, dy, radius));
         }
 
         // 动画函数
         function animate() {
-            drawApple(); // 绘制苹果
-
-            // 更新苹果的坐标
-            x += dx;
-            y += dy;
-
-            // 如果苹果碰到画布边缘，则改变运动方向
-            if (x + 30 > canvas.width || x - 30 < 0) {
-                dx = -dx;
-            }
-            if (y + 30 > canvas.height || y - 30 < 0) {
-                dy = -dy;
-            }
-
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
+            apples.forEach(apple => apple.update()); // 更新每个苹果的位置
             requestAnimationFrame(animate); // 请求下次动画帧
         }
 
         // 启动动画
         animate();
+
+        // 使画布自适应窗口大小变化
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
