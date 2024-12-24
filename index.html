@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>平安夜快乐 | 苹果动画</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        canvas {
+            display: block;
+            background-color: #f0f0f0;
+        }
+
+        .message {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 40px;
+            color: #FF6347;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="message">平安夜快乐！🎄</div>
+    <canvas id="appleCanvas"></canvas>
+    
+    <script>
+        // 获取canvas和其上下文
+        const canvas = document.getElementById('appleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 设置画布的大小
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // 苹果的初始位置和运动速度
+        let x = canvas.width / 2;
+        let y = canvas.height / 2;
+        let dx = 2;
+        let dy = 2;
+
+        // 绘制苹果的函数
+        function drawApple() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空画布
+            
+            // 画苹果主体（一个简单的圆形）
+            ctx.beginPath();
+            ctx.arc(x, y, 30, 0, Math.PI * 2);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            // 画苹果的叶子
+            ctx.beginPath();
+            ctx.moveTo(x - 10, y - 30); // 叶子的起点
+            ctx.lineTo(x + 10, y - 50); // 叶子的顶端
+            ctx.lineTo(x + 30, y - 30); // 叶子的终点
+            ctx.fillStyle = 'green';
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        // 动画函数
+        function animate() {
+            drawApple(); // 绘制苹果
+
+            // 更新苹果的坐标
+            x += dx;
+            y += dy;
+
+            // 如果苹果碰到画布边缘，则改变运动方向
+            if (x + 30 > canvas.width || x - 30 < 0) {
+                dx = -dx;
+            }
+            if (y + 30 > canvas.height || y - 30 < 0) {
+                dy = -dy;
+            }
+
+            requestAnimationFrame(animate); // 请求下次动画帧
+        }
+
+        // 启动动画
+        animate();
+    </script>
+</body>
+</html>
